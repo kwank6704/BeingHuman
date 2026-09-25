@@ -38,7 +38,7 @@ npm run db:up
 npm run seed
 ```
 
-`npm run seed` สร้างตาราง และใส่รูปตัวอย่าง 4 รูปของผู้ใช้ `demo` ถ้าเห็น `applied 001_init.sql` และ `seeded 001_demo.sql` แปลว่าสำเร็จ ขั้นนี้ทำครั้งเดียว terminal นี้ปิดได้เลย
+`npm run seed` สร้างตาราง และใส่รูปตัวอย่าง 7 รูปของผู้ใช้ `demo` ถ้าเห็น `applied 001_init.sql` และ `seeded 001_demo.sql` แปลว่าสำเร็จ ขั้นนี้ทำครั้งเดียว terminal นี้ปิดได้เลย
 
 ### 4. Backend (terminal ที่ 2 — เปิดค้างไว้)
 
@@ -60,7 +60,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-เปิด **http://localhost:3000** จะเห็น "สวัสดีค่ะ · มีรูปเก็บไว้ 4 รูป" (แนะนำให้กด F12 แล้วสลับเป็นมุมมองมือถือ)
+เปิด **http://localhost:3000** ครั้งแรกจะเจอหน้าต้อนรับ (เลือกคำเรียก + ขนาดตัวหนังสือ) แล้วจะเห็น "มีรูปเก็บไว้ 7 รูป" (แนะนำให้กด F12 แล้วสลับเป็นมุมมองมือถือ)
 
 ### ครั้งต่อไป
 
@@ -90,17 +90,24 @@ npm run dev
 
 ## Screens
 
-Built from the `MemoryBookApp` prototype (`Memory Book Final.dc.html`):
+Built from the `MemoryBookApp` prototype, extended so an elder can run the whole book alone:
 
-- **หน้าแรก** — greeting, photo count, 3 recent thumbnails; ดูรูปวันนี้ / + เพิ่มรูปใหม่ / ดูรูปทั้งหมด. Empty state: + เพิ่มรูปแรก.
-- **รูปวันนี้** — 3 photos picked by the server per day; plays the recorded story automatically (or reads the caption), progress dots, then ดูครบแล้ว.
-- **เพิ่มรูป** — camera or gallery → ใครอยู่ในรูป (ลูก/หลาน/คู่ชีวิต/พี่น้อง/เพื่อน/ตัวเอง) → record a story (up to 3 min, re-record, listen back) or skip → เก็บแล้ว.
-- **ดูรูปทั้งหมด** — one photo at a time grouped by relation, play story, next, delete with a big "ไม่ลบ เก็บไว้" default.
+- **ต้อนรับ (first run)** — what the book is, "อยากให้เรียกว่าอะไร" (คุณยาย/คุณตา/…), then pick a text size by seeing it.
+- **หน้าแรก** — greeting by time of day with their name, today's date, "ดูรูปมาแล้ว N วันติดกัน", 3 recent thumbnails;
+  ดูรูปวันนี้ / + เพิ่มรูปใหม่ / ดูรูปทั้งหมด, and ⚙ ตั้งค่า.
+- **รูปวันนี้** — 3 photos picked by the server per day; plays the story (or reads the name), then ดูครบแล้ว + streak.
+- **เพิ่มรูป** — camera or gallery (↻ rotate) → ใครอยู่ในรูป (9 groups incl. สัตว์เลี้ยง, สถานที่) → ชื่อรูป
+  (say it with speech-to-text, or type; optional) → record a story (up to 3 min) or skip → เก็บแล้ว.
+- **ดูรูปทั้งหมด** — groups with cover photos (❤ รูปโปรด first), "เปิดดูทุกรูปเอง" hands-free slideshow
+  (keeps the screen awake); viewer with ‹ › arrows, tap-to-zoom full screen, ❤ favourite, record a story for a photo
+  that has none, and ⋯ to rename, change group, re-record, share to LINE (Web Share), or delete with **เอาคืน** (undo).
+- **ตั้งค่า** — text size (3 steps, stored per user), light / high-contrast dark, read-aloud on/off and speed, name.
 
-Code: `components/MemoryBookApp.tsx` (screen state machine), `lib/api.ts` (API client), `lib/media.ts`
-(client-side downscale to 1400px JPEG), `lib/speech.ts` (TTS). Styling: `app/industry.css` is the Industry design
-system; `app/globals.css` holds the app layer. Sizes are deliberate accessibility values — keep captions ≥36px and
-buttons ≥56px.
+Code: `components/useBookState.ts` (all state + actions), `components/screens/*` (one component per screen, read state
+via `useBook()`), `components/useAudio.ts` / `useRecorder.ts`, `lib/api.ts` (API client), `lib/listen.ts`
+(speech-to-text), `lib/speech.ts` (TTS), `lib/share.ts`, `lib/media.ts` (downscale/rotate). Styling: `app/industry.css`
+is the Industry design system; `app/globals.css` holds the app layer and the dark theme. Every font size is multiplied
+by `--k` (text-size setting) — keep captions ≥36px and buttons ≥56px at the normal size.
 
 ## Next steps
 
