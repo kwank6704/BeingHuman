@@ -77,7 +77,7 @@ npm run dev
 ### ล้างข้อมูลกลับเป็นค่าเริ่มต้น
 
 - เฉพาะสมุด `demo`: `npm run seed` ใน BeingHuman-Database
-- ล้างทุกอย่าง: `npm run reset` ใน BeingHuman-Database แล้วลบทุกอย่างใน `BeingHuman-BE/storage/` **ยกเว้นโฟลเดอร์ `demo`**
+- ล้างทุกอย่าง: `npm run reset` ใน BeingHuman-Database แล้วลบโฟลเดอร์ `BeingHuman-BE/storage/` ทิ้ง (รูปตัวอย่างอยู่ใน `BeingHuman-BE/public/` ไม่หาย)
 
 ### เจอปัญหา
 
@@ -87,6 +87,27 @@ npm run dev
 | `port is already allocated` ตอน `db:up` | มี Postgres อื่นใช้ port 5432 อยู่ ปิดตัวนั้นก่อน |
 | หน้าเว็บขึ้น "ตอนนี้เปิดสมุดไม่ได้" | backend ไม่ได้รัน หรือยังไม่ได้ `npm run seed` |
 | อัดเสียงไม่ได้ ("เครื่องนี้อัดเสียงไม่ได้") | ไมค์ใช้ได้เฉพาะ `localhost` หรือ HTTPS เปิดผ่าน IP แบบ http จะอัดไม่ได้ |
+
+## Deploy ขึ้น Vercel
+
+ระบบบน Vercel มี 4 ชิ้น: **หน้าเว็บ** (โปรเจกต์ Vercel ที่ 1) → **backend** (โปรเจกต์ Vercel ที่ 2) → **Neon Postgres** (ข้อมูล) + **Vercel Blob** (ไฟล์รูป/เสียง)
+
+ทำตามลำดับนี้ — หน้าเว็บต้องรู้ URL ของ backend ก่อน:
+
+1. **Push ทั้ง 3 repo ขึ้น GitHub** (Vercel ดึงโค้ดจาก GitHub)
+2. **Backend + ฐานข้อมูล + ที่เก็บไฟล์** — ทำตาม [BeingHuman-BE → Deploy ขึ้น Vercel](https://github.com/kwank6704/BeingHuman-BE#deploy-ขึ้น-vercel) ให้เสร็จก่อน จนเปิด `https://<backend>/health` แล้วเห็น `{"ok":true}`
+3. **หน้าเว็บ** — บน [vercel.com](https://vercel.com) กด **Add New… → Project** → เลือก repo **BeingHuman** (Framework จะขึ้นเป็น Next.js เอง) → เปิด **Environment Variables** แล้วใส่:
+
+   | Name | Value |
+   | --- | --- |
+   | `API_URL` | URL ของ backend เช่น `https://beinghuman-be.vercel.app` (ต้องขึ้นต้น `https://` ไม่มี `/` ท้าย) |
+   | `NEXT_PUBLIC_USER_ID` | **เว้นว่าง** — ถ้าใส่ `demo` ทุกคนที่เปิดเว็บจะใช้ (และลบ) สมุดเล่มเดียวกัน |
+
+   แล้วกด **Deploy** — ถ้าลืมใส่ `API_URL` build จะ fail พร้อมข้อความ `API_URL must be set on Vercel…` ให้ใส่แล้ว **Redeploy**
+4. **ทดสอบ** — เปิด URL ของหน้าเว็บบนมือถือ เพิ่มรูป อัดเสียง (บน Vercel เป็น HTTPS ไมค์จึงใช้ได้) แล้วกดดูรูป
+
+`/api/*` และ `/media/*` ถูกส่งต่อไป backend โดย `next.config.ts` จึงไม่ต้องตั้ง CORS
+หลัง deploy แล้ว แค่ push ขึ้น GitHub Vercel ก็ deploy ใหม่ให้เอง (ถ้าแก้ตัวแปร `NEXT_PUBLIC_*` ต้องกด Redeploy เพราะค่าถูกฝังตอน build)
 
 ## Screens
 
