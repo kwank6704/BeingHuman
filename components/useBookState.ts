@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
 import * as api from '@/lib/api';
+import { initAuth } from '@/lib/auth';
 import type { Memory } from '@/lib/api';
 import { speak, stopSpeaking } from '@/lib/speech';
 import { greeting, localDay, rotateImage, shrinkImage, thDate } from '@/lib/media';
@@ -124,20 +125,23 @@ export function useBookState() {
 
   const loadAll = useCallback(() => {
     setLoad('loading');
-    Promise.all([refresh(), api.getMe()]).then(([, me]) => {
-      const s = { ...DEFAULTS, ...me.settings };
-      setSettings(s);
-      cacheSettings(s);
-      setNick(me.nickname);
-      setStreak({ streak: me.streak, visitedToday: me.visitedToday });
-      setLoad('ok');
-      if (!s.onboarded) {
-        setOnboarding(true);
-        setScr('welcome');
-        settingsRef.current = s;
-        say(SAY.welcome);
-      }
-    }, () => setLoad('error'));
+    initAuth()
+      // Leaving for LINE's login page: stay on "กำลังเปิดสมุด…" until we come back.
+      .then(r => (r === 'redirecting' ? new Promise<never>(() => {}) : Promise.all([refresh(), api.getMe()])))
+      .then(([, me]) => {
+        const s = { ...DEFAULTS, ...me.settings };
+        setSettings(s);
+        cacheSettings(s);
+        setNick(me.nickname);
+        setStreak({ streak: me.streak, visitedToday: me.visitedToday });
+        setLoad('ok');
+        if (!s.onboarded) {
+          setOnboarding(true);
+          setScr('welcome');
+          settingsRef.current = s;
+          say(SAY.welcome);
+        }
+      }, () => setLoad('error'));
   }, [refresh, say]);
 
   useEffect(() => {

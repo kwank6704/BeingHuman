@@ -2,10 +2,9 @@ const KEY = 'bh-user-id';
 let cached: string | null = null;
 
 /**
- * Who the API should treat as the current elder.
+ * Who the API should treat as the current elder when LINE login is off (see auth.ts).
  * NEXT_PUBLIC_USER_ID pins it (e.g. "demo" for the seeded data); otherwise a
  * device id is created once and kept in localStorage.
- * TODO: replace with the LIFF profile userId + ID token when LINE login is added.
  */
 export function getUserId(): string {
   if (cached) return cached;

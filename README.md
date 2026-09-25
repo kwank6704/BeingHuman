@@ -72,6 +72,7 @@ npm run dev
 | --- | --- |
 | `API_URL` | ที่อยู่ backend (ค่าเริ่มต้น `http://localhost:4000`) หน้าเว็บจะส่งต่อ `/api` และ `/media` ไปที่นี่ |
 | `NEXT_PUBLIC_USER_ID` | `demo` = ดูสมุดตัวอย่าง, เว้นว่าง = แต่ละเครื่องได้สมุดของตัวเอง (ต้องรีสตาร์ท `npm run dev` หลังแก้) |
+| `NEXT_PUBLIC_LIFF_ID` | เว้นว่างไว้ตอนรันในเครื่อง — ใส่เมื่อจะใช้ LINE login (ดูหัวข้อ "LINE login") |
 | `ALLOWED_DEV_ORIGINS` | ใส่ IP ของเครื่องนี้ ถ้าจะเปิดจากมือถือผ่าน `http://<IP>:3000` |
 
 ### ล้างข้อมูลกลับเป็นค่าเริ่มต้น
@@ -102,12 +103,33 @@ npm run dev
    | --- | --- |
    | `API_URL` | URL ของ backend เช่น `https://beinghuman-be.vercel.app` (ต้องขึ้นต้น `https://` ไม่มี `/` ท้าย) |
    | `NEXT_PUBLIC_USER_ID` | **เว้นว่าง** — ถ้าใส่ `demo` ทุกคนที่เปิดเว็บจะใช้ (และลบ) สมุดเล่มเดียวกัน |
+   | `NEXT_PUBLIC_LIFF_ID` | LIFF ID เมื่อตั้ง LINE login แล้ว (ดูหัวข้อถัดไป) |
 
    แล้วกด **Deploy** — ถ้าลืมใส่ `API_URL` build จะ fail พร้อมข้อความ `API_URL must be set on Vercel…` ให้ใส่แล้ว **Redeploy**
 4. **ทดสอบ** — เปิด URL ของหน้าเว็บบนมือถือ เพิ่มรูป อัดเสียง (บน Vercel เป็น HTTPS ไมค์จึงใช้ได้) แล้วกดดูรูป
 
 `/api/*` และ `/media/*` ถูกส่งต่อไป backend โดย `next.config.ts` จึงไม่ต้องตั้ง CORS
 หลัง deploy แล้ว แค่ push ขึ้น GitHub Vercel ก็ deploy ใหม่ให้เอง (ถ้าแก้ตัวแปร `NEXT_PUBLIC_*` ต้องกด Redeploy เพราะค่าถูกฝังตอน build)
+
+## LINE login (LIFF)
+
+เปิดสมุดจาก LINE แล้วสมุดจะผูกกับบัญชี LINE ของผู้ใช้ — เปลี่ยนมือถือหรือล้างข้อมูลเบราว์เซอร์ รูปก็ไม่หาย
+ถ้าไม่ตั้งค่านี้ แอปจะใช้ id ของเครื่องเหมือนเดิม (เหมาะกับตอนพัฒนาในเครื่อง)
+
+1. [LINE Developers Console](https://developers.line.biz/console/) → เลือก Provider เดียวกับ LINE OA → **Create a new channel → LINE Login**
+   (App types: **Web app**) แล้วจด **Channel ID** (แท็บ Basic settings)
+2. ในช่องนั้น แท็บ **LIFF → Add**
+   - Size: **Full**
+   - Endpoint URL: URL หน้าเว็บ เช่น `https://beinghuman-iota.vercel.app`
+   - Scopes: ติ๊ก **openid** และ **profile** (ต้องมี openid ไม่งั้นจะไม่ได้ ID token)
+   - แล้วจด **LIFF ID** (เช่น `2001234567-AbCdEfGh`) และ LIFF URL (`https://liff.line.me/<LIFF ID>`)
+3. Vercel → โปรเจกต์ **backend** → Environment Variables → เพิ่ม `LINE_CHANNEL_ID` = Channel ID → Redeploy
+4. Vercel → โปรเจกต์ **หน้าเว็บ** → เพิ่ม `NEXT_PUBLIC_LIFF_ID` = LIFF ID → **Redeploy** (ค่า `NEXT_PUBLIC_*` ฝังตอน build)
+5. LINE OA Manager → **Rich menu** → ให้ปุ่มเปิด LIFF URL — ผู้สูงอายุกดจากแชต OA ก็เข้าสมุดได้เลย ไม่ต้อง login เอง
+6. ช่อง LINE Login ยังเป็น **Developing** อยู่จะใช้ได้เฉพาะคนที่เป็น Admin/Tester ของช่อง — ทดสอบเสร็จแล้วกด **Publish**
+
+เมื่อ backend มี `LINE_CHANNEL_ID` จะไม่รับ `X-User-Id` อีก (สมุดตัวอย่าง `demo` จะเปิดจากเว็บไม่ได้) — ถ้ายังอยากให้เปิดได้
+ตั้ง `ALLOW_DEVICE_IDS=true` ที่ backend ชั่วคราว
 
 ## Screens
 
@@ -132,5 +154,6 @@ by `--k` (text-size setting) — keep captions ≥36px and buttons ≥56px at th
 
 ## Next steps
 
-- LINE LIFF: call `liff.init`, use the profile `userId` in `lib/user.ts`, and send the ID token for the API to verify.
+- Books made before LINE login (per-device ids) are not moved to the LINE account automatically.
+- Inside LINE, sharing could use `liff.shareTargetPicker` instead of the Web Share sheet.
 - Microphone recording requires HTTPS (or localhost).
