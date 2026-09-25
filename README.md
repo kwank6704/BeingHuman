@@ -122,6 +122,7 @@ npm run dev
    - Size: **Full**
    - Endpoint URL: URL หน้าเว็บ เช่น `https://beinghuman-iota.vercel.app`
    - Scopes: ติ๊ก **openid** และ **profile** (ต้องมี openid ไม่งั้นจะไม่ได้ ID token)
+   - เปิด **Share target picker: On** (ปุ่ม "ส่งรูปนี้ให้ลูกหลาน" จะเปิดรายชื่อเพื่อน/กลุ่ม LINE ให้เลือกส่ง)
    - แล้วจด **LIFF ID** (เช่น `2001234567-AbCdEfGh`) และ LIFF URL (`https://liff.line.me/<LIFF ID>`)
 3. Vercel → โปรเจกต์ **backend** → Environment Variables → เพิ่ม `LINE_CHANNEL_ID` = Channel ID → Redeploy
 4. Vercel → โปรเจกต์ **หน้าเว็บ** → เพิ่ม `NEXT_PUBLIC_LIFF_ID` = LIFF ID → **Redeploy** (ค่า `NEXT_PUBLIC_*` ฝังตอน build)
@@ -146,7 +147,7 @@ Built from the `MemoryBookApp` prototype, extended so an elder can run the whole
   (say it with speech-to-text, or type; optional) → record a story (up to 3 min) or skip → เก็บแล้ว.
 - **ดูรูปทั้งหมด** — groups with cover photos (❤ รูปโปรด first), "เปิดดูทุกรูปเอง" hands-free slideshow
   (keeps the screen awake); viewer with ‹ › arrows, tap-to-zoom full screen, ❤ favourite, record a story for a photo
-  that has none, and ⋯ to rename, change group, re-record, share to LINE (Web Share), or delete with **เอาคืน** (undo).
+  that has none, and ⋯ to rename, change group, re-record, send to family (LINE friend picker inside LINE, the phone share sheet elsewhere), or delete with **เอาคืน** (undo).
 - **ตั้งค่า** — text size (3 steps, stored per user), light / high-contrast dark, read-aloud on/off and speed, name.
 
 Code: `components/useBookState.ts` (all state + actions), `components/screens/*` (one component per screen, read state
@@ -158,5 +159,4 @@ by `--k` (text-size setting) — keep captions ≥36px and buttons ≥56px at th
 ## Next steps
 
 - Books made before LINE login (per-device ids) are not moved to the LINE account automatically.
-- Inside LINE, sharing could use `liff.shareTargetPicker` instead of the Web Share sheet.
 - Microphone recording requires HTTPS (or localhost).
