@@ -21,14 +21,34 @@ let ready: Promise<'ok' | 'redirecting'> | null = null;
 
 const loadLiff = async () => (await import('@line/liff')).default;
 
+const BOUNCE_KEY = 'bh-liff-bounce-at';
+
+/** True if we sent this tab to the LIFF URL a moment ago (and so should not do it again). */
+function bouncedRecently(): boolean {
+  try {
+    const last = Number(sessionStorage.getItem(BOUNCE_KEY) || 0);
+    sessionStorage.setItem(BOUNCE_KEY, String(Date.now()));
+    return Date.now() - last < 60_000;
+  } catch {
+    return true;
+  }
+}
+
 /** Logs in with LINE if needed. Resolves 'redirecting' when the page is about to leave for LINE's login. */
 export function initAuth(): Promise<'ok' | 'redirecting'> {
   ready ??= (async () => {
     if (!useLine()) return 'ok';
     const liff = await loadLiff();
     await liff.init({ liffId: LIFF_ID });
-    // Inside the LINE app this is already true; in another browser it opens LINE's login page.
+    // Inside the LINE app this is already true.
     if (!liff.isLoggedIn()) {
+      // On a phone, LINE's web login hands off to the LINE app and often never comes back to the
+      // browser. Open the app inside LINE instead (the LIFF URL), where LINE logs in by itself.
+      // If that link lands back in this browser (LINE not installed), use the web login.
+      if (liff.getOS() !== 'web' && !bouncedRecently()) {
+        location.replace('https://liff.line.me/' + LIFF_ID);
+        return 'redirecting';
+      }
       liff.login({ redirectUri: location.href });
       return 'redirecting';
     }

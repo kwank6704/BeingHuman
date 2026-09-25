@@ -126,6 +126,8 @@ npm run dev
 3. Vercel → โปรเจกต์ **backend** → Environment Variables → เพิ่ม `LINE_CHANNEL_ID` = Channel ID → Redeploy
 4. Vercel → โปรเจกต์ **หน้าเว็บ** → เพิ่ม `NEXT_PUBLIC_LIFF_ID` = LIFF ID → **Redeploy** (ค่า `NEXT_PUBLIC_*` ฝังตอน build)
 5. LINE OA Manager → **Rich menu** → ให้ปุ่มเปิด LIFF URL — ผู้สูงอายุกดจากแชต OA ก็เข้าสมุดได้เลย ไม่ต้อง login เอง
+   (ส่งลิงก์ให้คนอื่น ให้ส่ง LIFF URL `https://liff.line.me/<LIFF ID>` ไม่ใช่ URL ของ Vercel — ถ้าเปิด URL Vercel บนมือถือ
+   แอปจะพาไปเปิดใน LINE ให้เอง)
 6. ช่อง LINE Login ยังเป็น **Developing** อยู่จะใช้ได้เฉพาะคนที่เป็น Admin/Tester ของช่อง — ทดสอบเสร็จแล้วกด **Publish**
 
 เมื่อ backend มี `LINE_CHANNEL_ID` จะไม่รับ `X-User-Id` อีก ถ้ายังอยากโชว์สมุดตัวอย่าง ให้ตั้ง `ALLOW_DEVICE_IDS=true` ที่ backend
