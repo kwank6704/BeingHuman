@@ -51,6 +51,22 @@ export function albumOf(mems: Memory[], album: Album): Memory[] {
 }
 export const albumName = (a: Album) => (a === 'all' ? 'ทุกรูป' : a === 'fav' ? 'รูปโปรด' : a);
 
+/**
+ * The screen asked for by the buttons in the 07:00 LINE message: ?screen=today (ดูรูปวันนี้) or
+ * ?screen=add (+ เพิ่มรูปใหม่). Drops the flag from the address so a reload lands on the home screen.
+ * Before LIFF's own redirect the query is still packed inside liff.state, so look there too.
+ */
+function linkedScreen(): 'today' | 'add' | null {
+  const q = new URLSearchParams(location.search);
+  const inState = new URLSearchParams((q.get('liff.state') ?? '').replace(/^[^?]*\?/, ''));
+  const s = q.get('screen') ?? inState.get('screen');
+  if (s !== 'today' && s !== 'add') return null;
+  q.delete('screen');
+  const rest = q.toString();
+  history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+  return s;
+}
+
 type Draft = { blob: Blob; url: string; relation: string | null; caption: string | null };
 export type Toast = { text: string; undo?: () => void };
 
@@ -83,6 +99,7 @@ export function useBookState() {
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
   const loadedDay = useRef('');
+  const dailyRef = useRef<Memory[]>([]);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const audio = useAudio();
@@ -119,6 +136,7 @@ export function useBookState() {
     const [all, today] = await Promise.all([api.listMemories(), api.todayMemories()]);
     setMems(all);
     setDaily(today);
+    dailyRef.current = today;
     loadedDay.current = localDay();
     return all;
   }, []);
@@ -141,6 +159,16 @@ export function useBookState() {
           setScr('welcome');
           settingsRef.current = s;
           say(SAY.welcome);
+        } else {
+          // A button in the 07:00 LINE message. No autoplay or read-aloud here: the page was opened by
+          // LINE, not a tap, so the browser would block the sound — the play button is there.
+          const linked = linkedScreen();
+          if (linked === 'today' && dailyRef.current.length) {
+            setTi(0);
+            setScr('today');
+          } else if (linked === 'add') {
+            setScr('shoot');
+          }
         }
       }, () => setLoad('error'));
   }, [refresh, say]);

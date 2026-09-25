@@ -6,6 +6,8 @@ export type Settings = {
   autoSpeak: boolean;
   speechRate: 'slow' | 'normal';
   onboarded: boolean;
+  /** The 07:00 "สวัสดีตอนเช้าค่ะ" message from the LINE OA. */
+  morningGreeting: boolean;
 };
 
 export const DEFAULTS: Settings = {
@@ -14,6 +16,7 @@ export const DEFAULTS: Settings = {
   autoSpeak: true,
   speechRate: 'normal',
   onboarded: false,
+  morningGreeting: true,
 };
 
 /** Multiplier applied to every font size (the --k CSS variable). */

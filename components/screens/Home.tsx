@@ -1,6 +1,7 @@
 'use client';
 
 import { bg, greeting, thToday } from '@/lib/media';
+import { lineLoggedIn } from '@/lib/auth';
 import { RATE } from '@/lib/settings';
 import { speak } from '@/lib/speech';
 import { useBook } from '../book';
@@ -94,6 +95,17 @@ export function Settings() {
           <Choice on={s.speechRate === 'normal'} label="ปกติ" onClick={() => { b.updateSettings({ speechRate: 'normal' }); speak('อ่านแบบนี้นะคะ', RATE.normal); }} />
         </div>
       </section>
+
+      {lineLoggedIn() && (
+        <section className="mb-section">
+          <Sub fs={24}>ข้อความทักทายตอนเช้าใน LINE</Sub>
+          <Sub fs={19} style={{ opacity: 0.75 }}>ส่งตอนเจ็ดโมงเช้า ถ้าวันนั้นยังไม่ได้ดูรูป</Sub>
+          <div className="mb-grid2">
+            <Choice on={s.morningGreeting} label="เปิด" onClick={() => { b.updateSettings({ morningGreeting: true }); b.say('พรุ่งนี้เช้าจะส่งข้อความทักทายไปใน LINE ค่ะ'); }} />
+            <Choice on={!s.morningGreeting} label="ปิด" onClick={() => { b.updateSettings({ morningGreeting: false }); b.say('ปิดข้อความตอนเช้าแล้วค่ะ'); }} />
+          </div>
+        </section>
+      )}
 
       <section className="mb-section">
         <Sub fs={24}>ให้เรียกว่า</Sub>
