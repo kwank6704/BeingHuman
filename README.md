@@ -128,8 +128,9 @@ npm run dev
 5. LINE OA Manager → **Rich menu** → ให้ปุ่มเปิด LIFF URL — ผู้สูงอายุกดจากแชต OA ก็เข้าสมุดได้เลย ไม่ต้อง login เอง
 6. ช่อง LINE Login ยังเป็น **Developing** อยู่จะใช้ได้เฉพาะคนที่เป็น Admin/Tester ของช่อง — ทดสอบเสร็จแล้วกด **Publish**
 
-เมื่อ backend มี `LINE_CHANNEL_ID` จะไม่รับ `X-User-Id` อีก (สมุดตัวอย่าง `demo` จะเปิดจากเว็บไม่ได้) — ถ้ายังอยากให้เปิดได้
-ตั้ง `ALLOW_DEVICE_IDS=true` ที่ backend ชั่วคราว
+เมื่อ backend มี `LINE_CHANNEL_ID` จะไม่รับ `X-User-Id` อีก ถ้ายังอยากโชว์สมุดตัวอย่าง ให้ตั้ง `ALLOW_DEVICE_IDS=true` ที่ backend
+แล้วเปิดเว็บด้วย `?demo` ต่อท้าย เช่น `https://beinghuman-iota.vercel.app/?demo` — จะเปิดสมุด `demo` โดยไม่ต้อง login LINE
+(ทุกคนที่เปิดลิงก์นี้ใช้สมุดเล่มเดียวกัน แก้/ลบได้ — `npm run seed` ใน BeingHuman-Database เพื่อคืนค่า)
 
 ## Screens
 

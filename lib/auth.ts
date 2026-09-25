@@ -8,6 +8,13 @@ import { getUserId } from './user';
  */
 export const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID || '';
 
+/**
+ * "?demo" in the address opens the shared sample book without LINE, for presentations.
+ * The backend must allow it (ALLOW_DEVICE_IDS=true when LINE login is on).
+ */
+const isDemo = () => typeof location !== 'undefined' && new URLSearchParams(location.search).has('demo');
+const useLine = () => !!LIFF_ID && !isDemo();
+
 const RELOGIN_KEY = 'bh-relogin-at';
 let idToken: string | null = null;
 let ready: Promise<'ok' | 'redirecting'> | null = null;
@@ -17,7 +24,7 @@ const loadLiff = async () => (await import('@line/liff')).default;
 /** Logs in with LINE if needed. Resolves 'redirecting' when the page is about to leave for LINE's login. */
 export function initAuth(): Promise<'ok' | 'redirecting'> {
   ready ??= (async () => {
-    if (!LIFF_ID) return 'ok';
+    if (!useLine()) return 'ok';
     const liff = await loadLiff();
     await liff.init({ liffId: LIFF_ID });
     // Inside the LINE app this is already true; in another browser it opens LINE's login page.
@@ -34,7 +41,8 @@ export function initAuth(): Promise<'ok' | 'redirecting'> {
 }
 
 export function authHeaders(): Record<string, string> {
-  return LIFF_ID ? (idToken ? { Authorization: 'Bearer ' + idToken } : {}) : { 'X-User-Id': getUserId() };
+  if (isDemo()) return { 'X-User-Id': 'demo' };
+  return useLine() ? (idToken ? { Authorization: 'Bearer ' + idToken } : {}) : { 'X-User-Id': getUserId() };
 }
 
 /**
@@ -42,7 +50,7 @@ export function authHeaders(): Record<string, string> {
  * if we already tried a moment ago, so a broken setup shows an error instead of looping.
  */
 export async function relogin(): Promise<boolean> {
-  if (!LIFF_ID) return false;
+  if (!useLine()) return false;
   try {
     const last = Number(sessionStorage.getItem(RELOGIN_KEY) || 0);
     if (Date.now() - last < 60_000) return false;
