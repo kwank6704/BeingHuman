@@ -20,6 +20,13 @@ let idToken: string | null = null;
 let ready: Promise<'ok' | 'redirecting'> | null = null;
 
 const loadLiff = async () => (await import('@line/liff')).default;
+type Liff = Awaited<ReturnType<typeof loadLiff>>;
+let liffReady: Liff | null = null;
+
+/** LIFF, once logged in, if it can open LINE's "send to friends" picker (turned on in the LIFF app settings). */
+export function lineShareApi(): Liff | null {
+  return liffReady?.isApiAvailable('shareTargetPicker') ? liffReady : null;
+}
 
 const BOUNCE_KEY = 'bh-liff-bounce-at';
 
@@ -54,6 +61,7 @@ export function initAuth(): Promise<'ok' | 'redirecting'> {
     }
     idToken = liff.getIDToken();
     if (!idToken) throw new Error('LIFF app is missing the openid scope');
+    liffReady = liff;
     return 'ok';
   })();
   ready.catch(() => { ready = null; }); // let "ลองใหม่" try again

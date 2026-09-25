@@ -134,6 +134,7 @@ export function useBookState() {
         cacheSettings(s);
         setNick(me.nickname);
         setStreak({ streak: me.streak, visitedToday: me.visitedToday });
+        setShareOk(canShare()); // LINE's friend picker is only known after logging in
         setLoad('ok');
         if (!s.onboarded) {
           setOnboarding(true);
@@ -364,7 +365,11 @@ export function useBookState() {
 
   const share = (m: Memory) => {
     audio.stop();
-    shareMemory(m).catch(() => showToast({ text: 'ส่งไม่สำเร็จ ลองใหม่อีกครั้งนะคะ' }));
+    stopSpeaking();
+    shareMemory(m).then(
+      sent => { if (sent) { showToast({ text: 'ส่งรูปให้แล้วค่ะ' }); say('ส่งรูปให้แล้วค่ะ'); } },
+      () => showToast({ text: 'ส่งไม่สำเร็จ ลองใหม่อีกครั้งนะคะ' }),
+    );
   };
 
   const restore = async (m: Memory) => {
