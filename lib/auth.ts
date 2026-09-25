@@ -68,6 +68,9 @@ export function initAuth(): Promise<'ok' | 'redirecting'> {
   return ready;
 }
 
+/** True once logged in with LINE — only then can the OA's 07:00 message reach this person. */
+export const lineLoggedIn = () => useLine() && !!idToken;
+
 export function authHeaders(): Record<string, string> {
   if (isDemo()) return { 'X-User-Id': 'demo' };
   return useLine() ? (idToken ? { Authorization: 'Bearer ' + idToken } : {}) : { 'X-User-Id': getUserId() };
