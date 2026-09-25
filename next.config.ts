@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 
 // Backend the dev/prod server proxies /api and /media to, so the browser only ever
 // talks to this origin (works from a phone on the LAN/Tailscale without CORS setup).
+if (process.env.VERCEL && !/^https:\/\/(?!localhost|127\.)/.test(process.env.API_URL || '')) {
+  throw new Error('API_URL must be set on Vercel to the deployed BeingHuman-BE URL, e.g. https://beinghuman-be.vercel.app');
+}
 const API_URL = (process.env.API_URL || 'http://localhost:4000').replace(/\/$/, '');
 
 const nextConfig: NextConfig = {
