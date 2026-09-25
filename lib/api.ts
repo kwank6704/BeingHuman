@@ -1,4 +1,4 @@
-import { getUserId } from './user';
+import { authHeaders, relogin } from './auth';
 import type { Settings } from './settings';
 
 export type Memory = {
@@ -21,8 +21,10 @@ const BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
 async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE}/api${path}`, {
     ...init,
-    headers: { 'X-User-Id': getUserId(), ...init.headers },
+    headers: { ...authHeaders(), ...init.headers },
   });
+  // An expired LINE token: go get a new one (the page reloads, so this call never resolves).
+  if (res.status === 401 && (await relogin())) return new Promise<T>(() => {});
   if (!res.ok) throw new Error(`${init.method || 'GET'} ${path} → ${res.status}`);
   return (res.status === 204 ? undefined : await res.json()) as T;
 }
