@@ -16,8 +16,8 @@ export function Shoot() {
     <div className="mb-screen mb-pad">
       <Say text={SAY.shoot} className="mb-grow mb-center" style={{ gap: 10 }}>
         <CameraArt />
-        <H1 fs={42}>ถ่ายรูปใหม่</H1>
-        <Sub fs={24}>{SAY.shoot}</Sub>
+        <H1 fs={42}>เลือกรูป</H1>
+        <Sub fs={24}>ถ่ายรูปใหม่ หรือเลือกรูปที่มีในเครื่องก็ได้ค่ะ</Sub>
       </Say>
       <FileBtn kind="primary" h={130} fs={33} icon="camera" capture onPick={b.onPick}>เปิดกล้อง</FileBtn>
       <FileBtn kind="secondary" h={96} fs={28} icon="image" onPick={b.onPick}>เลือกรูปที่มีในเครื่อง</FileBtn>

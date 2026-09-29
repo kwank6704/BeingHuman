@@ -14,13 +14,16 @@ export type Kind = 'primary' | 'secondary' | 'ghost';
 
 type BtnProps = {
   kind: Kind; h: number; fs: number; icon?: IconName; iconEnd?: IconName; gap?: number; pressed?: boolean;
+  /** Drawn before the label on the same line (e.g. the round play badge). */
+  lead?: ReactNode;
   onClick?: () => void; children: ReactNode; style?: CSSProperties;
 };
 
-export function Btn({ kind, h, fs, icon, iconEnd, gap, pressed, onClick, children, style }: BtnProps) {
+export function Btn({ kind, h, fs, icon, iconEnd, lead, gap, pressed, onClick, children, style }: BtnProps) {
   return (
     <button type="button" onClick={onClick} aria-pressed={pressed} className={`btn btn-${kind} mb-btn`}
       style={{ minHeight: hpx(h), fontSize: px(fs), gap: gap ?? '0.4em', ...style }}>
+      {lead}
       {icon && <Icon name={icon} />}
       <span>{children}</span>
       {iconEnd && <Icon name={iconEnd} />}

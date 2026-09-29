@@ -4,6 +4,7 @@ import { useEffect, useState, type CSSProperties } from 'react';
 import { SCALE } from '@/lib/settings';
 import { Icon, Spinner } from './art';
 import { BookContext, useBook } from './book';
+import { LoadingScreen } from './Loading';
 import { useBookState, type Screen } from './useBookState';
 import { AddPhoto, Browse, Home, Today, Welcome } from './screens';
 
@@ -31,7 +32,7 @@ export default function MemoryBookApp() {
   // Greeting, date and settings depend on this device, so render only in the browser.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  if (!mounted) return <div className="mb-root" />;
+  if (!mounted) return <div className="mb-root"><LoadingScreen /></div>;
   return <Book />;
 }
 
