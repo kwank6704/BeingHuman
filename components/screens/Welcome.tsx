@@ -7,6 +7,26 @@ import { NICKNAMES, SAY } from '../useBookState';
 import { AlbumArt, Icon } from '../art';
 import { Btn, H1, Say, Sub, px } from '../ui';
 
+/** The very first screen: read aloud or not. Big, two answers, and the tap also lets the browser play sound. */
+export function Sound() {
+  const b = useBook();
+  return (
+    <div className="mb-screen mb-pad">
+      <div className="mb-grow mb-center" style={{ gap: 14 }}>
+        <div className="mb-speaker" aria-hidden>
+          <Icon name="speaker" size="64px" />
+          <i /><i /><i />
+        </div>
+        <div className="mb-kicker">สมุดความทรงจำ</div>
+        <H1 fs={42}>ให้อ่านออกเสียง<br />ให้ฟังไหมคะ</H1>
+        <Sub fs={23}>ตัวหนังสือบนจอจะถูกอ่านให้ฟังเอง<br />เปลี่ยนทีหลังได้ที่ “ตั้งค่า”</Sub>
+      </div>
+      <Btn kind="primary" h={124} fs={33} icon="speaker" onClick={() => b.chooseSound(true)}>อ่านให้ฟัง</Btn>
+      <Btn kind="secondary" h={96} fs={29} onClick={() => b.chooseSound(false)}>ไม่ต้องอ่าน</Btn>
+    </div>
+  );
+}
+
 export function Welcome() {
   const b = useBook();
   return (

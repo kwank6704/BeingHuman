@@ -9,6 +9,7 @@ import { useBookState, type Screen } from './useBookState';
 import { AddPhoto, Browse, Home, Today, Welcome } from './screens';
 
 const SCREENS: Record<Screen, () => React.ReactNode> = {
+  sound: Welcome.Sound,
   welcome: Welcome.Welcome,
   nickname: Welcome.Nickname,
   textSize: Welcome.TextSizeScreen,

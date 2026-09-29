@@ -12,7 +12,7 @@ import { useAudio } from './useAudio';
 import { useRecorder } from './useRecorder';
 
 export type Screen =
-  | 'welcome' | 'nickname' | 'textSize'
+  | 'sound' | 'welcome' | 'nickname' | 'textSize'
   | 'home' | 'settings'
   | 'shoot' | 'who' | 'name' | 'tell' | 'saved'
   | 'today' | 'todayDone'
@@ -155,10 +155,11 @@ export function useBookState() {
         setShareOk(canShare()); // LINE's friend picker is only known after logging in
         setLoad('ok');
         if (!s.onboarded) {
+          // First question: read aloud or not. Nothing is spoken yet — the browser only allows sound
+          // after a tap, and tapping an answer here is that tap.
           setOnboarding(true);
-          setScr('welcome');
+          setScr('sound');
           settingsRef.current = s;
-          say(SAY.welcome);
         } else {
           // A button in the 07:00 LINE message. No autoplay or read-aloud here: the page was opened by
           // LINE, not a tap, so the browser would block the sound — the play button is there.
@@ -206,6 +207,12 @@ export function useBookState() {
     setSettings(next);
     cacheSettings(next);
     api.updateMe({ settings: patch }).catch(() => {});
+  };
+
+  /** First-run answer to "ให้อ่านออกเสียงให้ฟังไหมคะ". */
+  const chooseSound = (on: boolean) => {
+    updateSettings({ autoSpeak: on });
+    go('welcome');
   };
 
   const chooseNickname = (n: string | null) => {
@@ -462,6 +469,7 @@ export function useBookState() {
       case 'tell': recorder.reset(); return go('name');
       case 'view': return go('albums');
       case 'more': return go('view', null);
+      case 'welcome': return go('sound');
       case 'nickname': return onboarding ? go('welcome') : go('settings', null);
       case 'textSize': return onboarding ? go('nickname') : go('settings', null);
       default: return go('home', homeSay());
@@ -476,16 +484,17 @@ export function useBookState() {
       case 'tell': return 'แก้ชื่อรูป';
       case 'view': return 'เลือกกลุ่มรูป';
       case 'more': return 'กลับไปที่รูป';
+      case 'welcome': return 'ย้อนกลับ';
       case 'nickname': case 'textSize': return onboarding ? 'ย้อนกลับ' : 'กลับไปตั้งค่า';
       default: return 'กลับหน้าแรก';
     }
   })();
-  const showBack = !['welcome', 'home', 'saved', 'todayDone', 'slideshow', 'confirmDelete'].includes(scr);
+  const showBack = !['sound', 'home', 'saved', 'todayDone', 'slideshow', 'confirmDelete'].includes(scr);
 
   return {
     scr, go, back, backLabel, showBack, say, homeSay,
     mems, daily, load, loadAll, settings, updateSettings, nickname, streak, onboarding,
-    chooseNickname, chooseTextSize,
+    chooseSound, chooseNickname, chooseTextSize,
     album, list, vi, cur, ti, openAlbum, step, toggleFav, startSlideshow,
     draft, editId, editing, nameText, setNameText, lastSaved, saveErr,
     startAdd, onPick, rotateDraft, pickRel, confirmName, save,
