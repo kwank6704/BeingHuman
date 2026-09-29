@@ -366,6 +366,20 @@ label.mb-btn { cursor: pointer; }
 .mb-zoom img { flex: 1; min-height: 0; width: 100%; max-width: none; object-fit: contain; }
 .mb-zoom .btn { margin: 0 20px; min-height: 88px; font-size: calc(28px * var(--k)); }
 
+/* — first question: read aloud? — */
+.mb-speaker {
+  position: relative; width: 150px; height: 150px; margin: 20px 0 30px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--on-primary);
+  background: linear-gradient(180deg, var(--primary-top), var(--primary-bottom));
+  box-shadow: 0 18px 36px -16px var(--primary-shadow);
+}
+.mb-speaker > i {
+  position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--color-accent);
+  animation: mb-ring 2.4s ease-out infinite;
+}
+.mb-speaker > i:nth-of-type(2) { animation-delay: .8s; }
+.mb-speaker > i:nth-of-type(3) { animation-delay: 1.6s; }
+
 /* — loading — */
 .mb-loading {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
@@ -426,7 +440,7 @@ label.mb-btn { cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) {
   .mb-screen, .mb-slide, .mb-slide-img, .mb-drift, .mb-twinkle, .mb-float, .mb-bloom, .mb-toast, .mb-zoom,
-  .mb-mic-pulse::before, .mb-mic-pulse::after, .mb-rec-dot, .mb-loading, .mb-flip, .mb-rise, .mb-loading-dots i { animation: none !important; }
+  .mb-mic-pulse::before, .mb-mic-pulse::after, .mb-rec-dot, .mb-loading, .mb-flip, .mb-rise, .mb-loading-dots i, .mb-speaker > i { animation: none !important; }
   .mb-rise { opacity: 1; }
   .mb-petals { display: none; }
 }
