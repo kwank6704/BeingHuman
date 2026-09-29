@@ -74,8 +74,8 @@ export function View() {
       <div className="mb-actions">
         {m.voiceUrl ? (
           <div className="mb-card mb-player">
-            <Btn kind="primary" h={96} fs={28} gap={14} onClick={() => b.audio.toggle(m.voiceUrl!, m.voiceDurationSec)}>
-              <PlayIcon playing={playing} />{playing ? 'หยุดฟัง' : 'ฟังเรื่องที่เล่าไว้'}
+            <Btn kind="primary" h={96} fs={28} gap={14} lead={<PlayIcon playing={playing} />} onClick={() => b.audio.toggle(m.voiceUrl!, m.voiceDurationSec)}>
+              {playing ? 'หยุดฟัง' : 'ฟังเรื่องที่เล่าไว้'}
             </Btn>
             <Waveform seed={m.id} pct={prog} />
           </div>
