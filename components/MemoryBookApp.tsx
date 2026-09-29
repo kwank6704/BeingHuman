@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from 'react';
 import { SCALE } from '@/lib/settings';
+import { Icon, Spinner } from './art';
 import { BookContext, useBook } from './book';
 import { useBookState, type Screen } from './useBookState';
 import { AddPhoto, Browse, Home, Today, Welcome } from './screens';
@@ -39,14 +40,15 @@ function Book() {
   const Current = SCREENS[book.scr];
   return (
     <BookContext.Provider value={book}>
-      <div className="blueprint mb-root" style={{ '--k': SCALE[book.settings.textSize] } as CSSProperties}>
-        <i className="corner tl" /><i className="corner tr" /><i className="corner bl" /><i className="corner br" />
+      <div className="mb-root" style={{ '--k': SCALE[book.settings.textSize] } as CSSProperties}>
         {book.showBack && (
-          <button type="button" onClick={book.back} className="btn btn-ghost mb-btn mb-back">‹ {book.backLabel}</button>
+          <div className="mb-topbar">
+            <button type="button" onClick={book.back} className="mb-back"><Icon name="left" /> {book.backLabel}</button>
+          </div>
         )}
         <Current key={book.scr} />
         <ToastBar />
-        {book.busy && <div className="mb-busy" role="status">{book.busy}</div>}
+        {book.busy && <div className="mb-busy" role="status"><div className="mb-busy-card"><Spinner />{book.busy}</div></div>}
         <Zoom />
       </div>
     </BookContext.Provider>
@@ -59,8 +61,9 @@ function ToastBar() {
   if (!toast) return null;
   return (
     <div className="mb-toast" role="status">
+      <Icon name={toast.undo ? 'trash' : 'check'} />
       <span>{toast.text}</span>
-      {toast.undo && <button type="button" className="mb-toast-undo" onClick={toast.undo}>เอาคืน</button>}
+      {toast.undo && <button type="button" className="mb-toast-undo" onClick={toast.undo}><Icon name="undo" /> เอาคืน</button>}
     </div>
   );
 }
@@ -72,7 +75,7 @@ function Zoom() {
     <div className="mb-zoom" role="dialog" aria-label="รูปเต็มจอ">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={zoom} alt="" onClick={() => setZoom(null)} />
-      <button type="button" className="btn btn-primary mb-btn" onClick={() => setZoom(null)}>✕  ปิดรูปใหญ่</button>
+      <button type="button" className="btn btn-primary mb-btn" onClick={() => setZoom(null)}><Icon name="close" /> ปิดรูปใหญ่</button>
     </div>
   );
 }
