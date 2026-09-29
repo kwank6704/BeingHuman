@@ -366,6 +366,25 @@ label.mb-btn { cursor: pointer; }
 .mb-zoom img { flex: 1; min-height: 0; width: 100%; max-width: none; object-fit: contain; }
 .mb-zoom .btn { margin: 0 20px; min-height: 88px; font-size: calc(28px * var(--k)); }
 
+/* — loading — */
+.mb-loading {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  padding: 24px; text-align: center;
+  background: radial-gradient(70% 45% at 50% 42%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 70%);
+  animation: mb-fade .5s ease both;
+}
+.mb-loading-book { width: min(290px, 78%); height: auto; overflow: visible; margin-bottom: 18px; }
+.mb-loading-kicker { font: 600 calc(19px * var(--k)) var(--font-anuphan), sans-serif; color: var(--color-accent-700); }
+.mb-loading-text { font: 700 calc(32px * var(--k)) var(--font-anuphan), sans-serif; color: var(--color-text); }
+.mb-loading-dots i { font-style: normal; animation: mb-dot 1.4s ease-in-out infinite; }
+.mb-loading-dots i:nth-child(2) { animation-delay: .2s; }
+.mb-loading-dots i:nth-child(3) { animation-delay: .4s; }
+.mb-flip {
+  fill: #EAF3FC; transform-box: view-box; transform-origin: 110px 78px;
+  animation: mb-flip 1.8s cubic-bezier(.45, 0, .25, 1) infinite;
+}
+.mb-rise { transform-box: fill-box; transform-origin: center; opacity: 0; animation: mb-rise 3.3s ease-out infinite; }
+
 /* — drawn pictures — */
 .mb-tree { overflow: visible; }
 .mb-bloom { transform-box: fill-box; transform-origin: center; animation: mb-bloom 1s .35s cubic-bezier(.2, 1.5, .4, 1) both; }
@@ -393,9 +412,21 @@ label.mb-btn { cursor: pointer; }
 @keyframes mb-ring { from { transform: scale(1); opacity: .6; } to { transform: scale(1.75); opacity: 0; } }
 @keyframes mb-blink { 50% { opacity: .25; } }
 @keyframes mb-spin { to { transform: rotate(360deg); } }
+@keyframes mb-flip {
+  0%, 12% { transform: scaleX(1); fill: #FFFFFF; }
+  50% { transform: scaleX(0.02); fill: #CFE2F5; }
+  88%, 100% { transform: scaleX(-1); fill: #F7FBFF; }
+}
+@keyframes mb-rise {
+  0% { opacity: 0; transform: translateY(14px) scale(.6); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-22px) scale(1.15); }
+}
+@keyframes mb-dot { 0%, 60%, 100% { opacity: .2; } 30% { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   .mb-screen, .mb-slide, .mb-slide-img, .mb-drift, .mb-twinkle, .mb-float, .mb-bloom, .mb-toast, .mb-zoom,
-  .mb-mic-pulse::before, .mb-mic-pulse::after, .mb-rec-dot { animation: none !important; }
+  .mb-mic-pulse::before, .mb-mic-pulse::after, .mb-rec-dot, .mb-loading, .mb-flip, .mb-rise, .mb-loading-dots i { animation: none !important; }
+  .mb-rise { opacity: 1; }
   .mb-petals { display: none; }
 }

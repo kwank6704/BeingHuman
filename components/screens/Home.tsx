@@ -5,6 +5,7 @@ import { lineLoggedIn } from '@/lib/auth';
 import { RATE } from '@/lib/settings';
 import { speak } from '@/lib/speech';
 import { useBook } from '../book';
+import { LoadingScreen } from '../Loading';
 import { SAY } from '../useBookState';
 import { CameraArt, Icon, SkyScene } from '../art';
 import { Btn, H1, Polaroid, Say, Sub } from '../ui';
@@ -14,9 +15,9 @@ export function Home() {
   const b = useBook();
   const n = b.mems.length;
   const recent = b.mems.slice().sort((x, y) => y.createdAt.localeCompare(x.createdAt)).slice(0, 3);
+  if (b.load === 'loading') return <LoadingScreen />;
   const status =
-    b.load === 'loading' ? 'กำลังเปิดสมุด…'
-    : b.load === 'error' ? 'ตอนนี้เปิดสมุดไม่ได้ ลองใหม่อีกครั้งนะคะ'
+    b.load === 'error' ? 'ตอนนี้เปิดสมุดไม่ได้ ลองใหม่อีกครั้งนะคะ'
     : n ? 'มีรูปเก็บไว้ ' + n + ' รูป' : 'ยังไม่มีรูปเลย มาเริ่มเก็บรูปแรกกันค่ะ';
 
   return (

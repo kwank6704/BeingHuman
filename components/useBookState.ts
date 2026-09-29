@@ -29,7 +29,7 @@ export const SAY: Partial<Record<Screen, string>> = {
   nickname: 'อยากให้เรียกว่าอะไรดีคะ',
   textSize: 'ตัวหนังสือขนาดไหนอ่านง่ายที่สุดคะ กดเลือกได้เลยค่ะ',
   settings: 'ตั้งค่า ปรับตัวหนังสือ สี และเสียงได้ที่นี่ค่ะ',
-  shoot: 'ถ่ายรูปคนที่รัก หรือถ่ายรูปเก่าในอัลบั้มก็ได้ค่ะ',
+  shoot: 'เลือกรูปที่จะเก็บค่ะ ถ่ายรูปใหม่ หรือเลือกรูปที่มีในเครื่องก็ได้ค่ะ',
   who: 'ใครอยู่ในรูปนี้คะ',
   name: 'รูปนี้ชื่ออะไรดีคะ พูดหรือพิมพ์ก็ได้ค่ะ',
   tell: 'เล่าให้ฟังหน่อยค่ะ รูปนี้ถ่ายที่ไหน ตอนไหน ใครอยู่ด้วย',
@@ -471,7 +471,7 @@ export function useBookState() {
   const backLabel = (() => {
     if (editId && EDIT_SCREENS.includes(scr)) return 'กลับไปที่รูป';
     switch (scr) {
-      case 'who': return 'ถ่ายรูปใหม่';
+      case 'who': return 'เลือกรูปใหม่';
       case 'name': return 'เลือกคนใหม่';
       case 'tell': return 'แก้ชื่อรูป';
       case 'view': return 'เลือกกลุ่มรูป';
