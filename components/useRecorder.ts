@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { stopSpeaking } from '@/lib/speech';
 
 export const MAX_REC_SEC = 180;
@@ -18,6 +18,23 @@ export function useRecorder(keep: () => boolean) {
   const timer = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   const voiceRef = useRef<Voice | null>(null);
   const discard = useRef(false);
+  // Microphone level for the live waveform while recording.
+  const meter = useRef<{ ctx: AudioContext; analyser: AnalyserNode; buf: Float32Array<ArrayBuffer> } | null>(null);
+
+  /** Loudness right now, 0–1 (0 when not recording). */
+  const level = useCallback(() => {
+    const m = meter.current;
+    if (!m) return 0;
+    m.analyser.getFloatTimeDomainData(m.buf);
+    let sum = 0;
+    for (const v of m.buf) sum += v * v;
+    return Math.min(1, Math.sqrt(sum / m.buf.length) * 5);
+  }, []);
+
+  const closeMeter = () => {
+    meter.current?.ctx.close().catch(() => {});
+    meter.current = null;
+  };
 
   const setVoice = (v: Voice | null) => {
     if (voiceRef.current && voiceRef.current !== v) URL.revokeObjectURL(voiceRef.current.url);
@@ -46,7 +63,19 @@ export function useRecorder(keep: () => boolean) {
       const chunks: Blob[] = [];
       discard.current = false;
       mr.ondataavailable = ev => { if (ev.data?.size) chunks.push(ev.data); };
+      try {
+        const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const ctx = new AC();
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 1024;
+        ctx.createMediaStreamSource(stream).connect(analyser);
+        closeMeter();
+        meter.current = { ctx, analyser, buf: new Float32Array(analyser.fftSize) };
+      } catch {
+        // No meter: the waveform just stays flat; recording still works.
+      }
       mr.onstop = () => {
+        closeMeter();
         stream.getTracks().forEach(t => t.stop());
         clearInterval(timer.current);
         if (discard.current || !keep()) return setState('idle');
@@ -74,10 +103,11 @@ export function useRecorder(keep: () => boolean) {
   }, [state, sec]);
 
   useEffect(() => () => {
+    closeMeter();
     discard.current = true;
     clearInterval(timer.current);
     if (mrRef.current?.state === 'recording') mrRef.current.stop();
   }, []);
 
-  return { state, sec, voice, micErr, start, stop, reset };
+  return { state, sec, voice, micErr, start, stop, reset, level };
 }

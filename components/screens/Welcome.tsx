@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react';
 import { SCALE, type TextSize } from '@/lib/settings';
 import { useBook } from '../book';
 import { NICKNAMES, SAY } from '../useBookState';
+import { AlbumArt, Icon } from '../art';
 import { Btn, H1, Say, Sub, px } from '../ui';
 
 export function Welcome() {
@@ -11,16 +12,17 @@ export function Welcome() {
   return (
     <div className="mb-screen mb-pad">
       <Say text={SAY.welcome} className="mb-grow" style={{ gap: 12 }}>
+        <AlbumArt />
         <div className="mb-kicker">สมุดความทรงจำ</div>
-        <H1 fs={46}>สวัสดีค่ะ<br />ยินดีต้อนรับ</H1>
-        <Sub fs={25}>สมุดนี้เก็บรูปคนที่รัก พร้อมเสียงเล่าเรื่องของคุณเอง</Sub>
+        <H1 fs={44}>สวัสดีค่ะ<br />ยินดีต้อนรับ</H1>
+        <Sub fs={24}>สมุดนี้เก็บรูปคนที่รัก พร้อมเสียงเล่าเรื่องของคุณเอง</Sub>
         <ol className="mb-steps">
-          <li><b>1</b>ถ่ายรูปคนที่รัก</li>
-          <li><b>2</b>เล่าเรื่องให้ฟัง</li>
-          <li><b>3</b>เปิดดูทุกวัน</li>
+          <li><b><Icon name="camera" /></b>ถ่ายรูปคนที่รัก</li>
+          <li><b><Icon name="mic" /></b>เล่าเรื่องให้ฟัง</li>
+          <li><b><Icon name="sun" /></b>เปิดดูทุกวัน</li>
         </ol>
       </Say>
-      <Btn kind="primary" h={124} fs={33} onClick={() => b.go('nickname')}>เริ่มเลย ›</Btn>
+      <Btn kind="primary" h={116} fs={33} onClick={() => b.go('nickname')}>เริ่มเลย</Btn>
     </div>
   );
 }
@@ -35,10 +37,10 @@ export function Nickname() {
       </Say>
       <div className="mb-grid2">
         {NICKNAMES.map(n => (
-          <Btn key={n} kind={n === b.nickname ? 'primary' : 'secondary'} pressed={n === b.nickname} h={88} fs={30} onClick={() => b.chooseNickname(n)}>{n}</Btn>
+          <Btn key={n} kind={n === b.nickname ? 'primary' : 'secondary'} pressed={n === b.nickname} h={88} fs={30} icon={n === b.nickname ? 'check' : undefined} onClick={() => b.chooseNickname(n)}>{n}</Btn>
         ))}
       </div>
-      <Btn kind="ghost" h={64} fs={23} onClick={() => b.chooseNickname(null)}>ไม่ต้องเรียก ข้ามไป ›</Btn>
+      <Btn kind="ghost" h={64} fs={23} onClick={() => b.chooseNickname(null)}>ไม่ต้องเรียก ข้ามไป</Btn>
     </div>
   );
 }
@@ -65,7 +67,7 @@ export function TextSizePicker() {
             className={`btn btn-${on ? 'primary' : 'secondary'} mb-btn mb-size`}
             style={{ '--k': SCALE[size] } as CSSProperties}
           >
-            <span style={{ fontSize: px(28) }}>{on ? '✓ ' : ''}อ่านง่ายไหมคะ</span>
+            <span style={{ fontSize: px(28), display: 'inline-flex', alignItems: 'center', gap: '0.3em' }}>{on && <Icon name="check" />}อ่านง่ายไหมคะ</span>
             <span style={{ fontSize: px(18), fontWeight: 500 }}>ตัวหนังสือ{label}</span>
           </button>
         );
